@@ -1,20 +1,26 @@
-import { Column, PrimaryGeneratedColumn, OneToMany, CreateDateColumn, Entity } from 'typeorm';
+import {
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 export class Base {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @CreateDateColumn({ type: 'timestamp' })
-  createdAt: string;
+  @CreateDateColumn({ name: 'created_at', type: 'timestamptz' })
+  created_at!: Date;
 
-  @CreateDateColumn({ type: 'timestamp' , nullable: true})
-  updatedAt: string;
+  @CreateDateColumn({ name: 'updated_at', type: 'timestamptz', nullable: true })
+  updated_at!: Date;
 
-  @Column({  nullable: true }) // Allows null and limits length to 10
-  createdBy: string;
+  @DeleteDateColumn({ name: 'deleted_at', type: 'timestamptz', nullable: true })
+  deleted_at?: Date | null;
 
   @Column({ nullable: true }) // Allows null and limits length to 10
-  updatedBy: string;
+  createdby: string;
 
+  @Column({ nullable: true }) // Allows null and limits length to 10
+  updatedby: string;
 }
-

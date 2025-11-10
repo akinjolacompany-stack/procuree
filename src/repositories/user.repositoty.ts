@@ -1,108 +1,47 @@
-import { DeleteResult, ILike, Repository } from 'typeorm';
-import { User } from '../entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+// src/modules/users/user.repository.ts
 import { Injectable } from '@nestjs/common';
-import {
-  PageInfo,
-  PaginatedRecordsDto,
-  PaginationDto,
-} from 'src/dtos/pagination.dto';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/entities/user.entity';
+import { DataSource, Repository } from 'typeorm';
+import { BaseRepository } from './base.repository';
+import { PaginationDto } from 'src/dtos/pagination.dto';
+import { QueryBuilderHelper } from 'src/utils/queryBuilder.utils';
 import { UserFilterDto } from 'src/dtos/user.dto';
 
-@Injectable() // Note: `EntityRepository` is deprecated, consider using DI with `@InjectRepository`.
-export class UserRepository {
+@Injectable()
+export class UserRepository extends BaseRepository<User> {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-  ) {}
-
-  async createUser(data: User): Promise<User> {
-    console.log(data);
-    return await this.userRepository.save(data);
+    @InjectDataSource() dataSource: DataSource,
+    @InjectRepository(User) repo: Repository<User>,
+  ) {
+    super(dataSource, repo);
   }
 
-  async findById(id: number): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { id } });
+  async findUserByEmail(email: string) {
+    return this.repo.findOne({ where: { email } });
   }
 
-  async findUserByEmail(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { emailAddress: email } });
+  async findAllUsers(options: PaginationDto, userFilterDto: UserFilterDto) {
+    const qb = this.repo.createQueryBuilder('user');
+
+    const helper = new QueryBuilderHelper(qb);
+
+    helper
+      .applyRelations([{ alias: 'group', path: 'user.memberships' }])
+      // .applySelect([
+      //   'user.id',
+      //   'user.firstName',
+      //   'user.email',
+      //   'user.created_at',
+      //   'group.id',
+      //   'group.userId',
+      // ])
+      .applySearch({
+        'user.firstName': userFilterDto.searchQuery,
+        'user.email': userFilterDto.searchQuery,
+      })
+      .applySorting('user.created_at', options.sortOrder);
+
+    return helper.paginate(options, );
   }
-
-  
-
-  async findAll(
-    paginationDto: PaginationDto,
-    userFilterDto: UserFilterDto,
-  ): Promise<PaginatedRecordsDto<User>> {
-    const { page, per_page, sortOrder } = paginationDto;
-
-    const where = this.buildQuery(userFilterDto);
-
-    const [data, total] = await Promise.all([
-      this.userRepository.find({
-        select : [
-          'id',
-          'firstName',
-          'lastName',
-          'createdAt',
-          'updatedAt',
-          'createdBy',
-          'updatedBy',
-          'emailAddress'
-        ],
-        where,
-        order: {
-          ['createdAt']: sortOrder,
-        },
-        skip: (page - 1) * per_page,
-        take: per_page,
-      }),
-      this.userRepository.count({
-        where,
-      }),
-    ]);
-
-    const totalPages = Math.ceil(total / per_page);
-    const pageInfo: PageInfo = {
-      total,
-      currentPage: page,
-      perPage: per_page,
-      totalPages,
-    };
-
-    return {
-      data,
-      pageInfo,
-    };
-  }
-
-  async updateById(data: User): Promise<User> {
-    return await this.userRepository.save(data);
-  }
-
-  async deleteById(id: number): Promise<DeleteResult> {
-    return await this.userRepository.delete({ id });
-  }
-
-  private buildQuery = (callHomeFilterDto: UserFilterDto): Partial<User[]> => {
-    const { searchQuery } = callHomeFilterDto;
-
-    let where = [];
-
-    if (searchQuery) {
-      where = [
-        {
-          firstName: ILike(`%${searchQuery}%`),
-        },
-        // {
-        //   ifavailable: ILike(`%${searchQuery}%`),
-        // },
-      ];
-    }
-
-    return where;
-  };
-
-  // Add other custom methods as needed
 }

@@ -52,5 +52,8 @@ export type PageInfo = {
  */
 export class PaginatedRecordsDto<T> {
   data: Array<T>;
-  pageInfo: PageInfo;
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
 }
