@@ -4,7 +4,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { BaseRepository } from './base.repository';
 import { UserGroup } from 'src/entities/user_group.entity';
-import { Role } from 'src/common/index.enum';
+import { RoleEnum } from 'src/common/index.enum';
 import { PaginationDto } from 'src/dtos/pagination.dto';
 import { UserFilterDto } from 'src/dtos/user.dto';
 import { QueryBuilderHelper } from 'src/utils/queryBuilder.utils';
@@ -29,7 +29,7 @@ export class UserGroupRepository extends BaseRepository<UserGroup> {
         { alias: 'group', path: 'user_groups.group' },
       ])
       .applyFilter({
-        'user_groups.role': Role.PROCUREE,
+        'user_groups.role': RoleEnum.PATRON,
       })
       .applySelect([
         'user.id',
@@ -51,7 +51,7 @@ export class UserGroupRepository extends BaseRepository<UserGroup> {
 
   async findUserGroupByEmailAndRole(
     email: string,
-    role: Role,
+    role: RoleEnum,
     groupId?: string,
   ) {
     const _where = { user: { email }, role };

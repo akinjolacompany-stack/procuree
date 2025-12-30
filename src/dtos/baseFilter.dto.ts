@@ -11,4 +11,9 @@ export class BaseFilterDto {
   @IsDateString()
   @IsOptional()
   endDate?: Date;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  searchQuery?: string;
 }

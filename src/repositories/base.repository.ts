@@ -1,4 +1,6 @@
 // src/common/repositories/base.repository.ts
+import { Injectable } from '@nestjs/common';
+import { RequestContext } from 'src/common/context/requestContext';
 import { PaginationDto } from 'src/dtos/pagination.dto';
 import {
   DataSource,
@@ -15,11 +17,21 @@ export class BaseRepository<T extends { id: any }> {
     protected readonly dataSource: DataSource,
     protected readonly repo: Repository<T>,
   ) {}
+  private getGroupId() {
+    return RequestContext.get('groupId');
+  }
 
-  async create(data: DeepPartial<T>): Promise<T> {
-    const entity = this.repo.create(data);
+  async create(data: DeepPartial<T>, hasGroupId = true): Promise<T> {
+    const groupId = this.getGroupId();
+
+    console.log('groupId', groupId, hasGroupId);
+
+    const entity = hasGroupId
+      ? this.repo.create({ ...data, groupId: groupId })
+      : this.repo.create(data);
     return this.repo.save(entity);
   }
+
   findById(id: any, options?: FindOneOptions<T>) {
     return this.repo.findOne({ where: { id } as any, ...(options ?? {}) });
   }
@@ -38,7 +50,7 @@ export class BaseRepository<T extends { id: any }> {
     if (!v) throw new Error('EntityNotFound');
     return v;
   }
-  async delete(id: any, soft = false) {
+  async delete(id: any, soft = true) {
     if (soft && (this.repo.softDelete as any))
       await (this.repo.softDelete as any)(id);
     else await this.repo.delete(id);

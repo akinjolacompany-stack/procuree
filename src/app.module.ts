@@ -14,18 +14,54 @@ import { UserGroupRepository } from './repositories/userGroup.repository';
 import { Group } from './entities/group.entity';
 import { UserGroup } from './entities/user_group.entity';
 import { RolesGuard } from './guards/roleGuard';
+import { CommodityService } from './services/commodity.service';
+import { CategoryService } from './services/category.service';
+import { CommodityRepository } from './repositories/commodity.repository';
+import { CategoryRepository } from './repositories/category.repository';
+import { CommodityController } from './controller/commodity.controller';
+import { CategoryController } from './controller/category.controller';
+import { Commodity } from './entities/commodity.entity';
+import { Category } from './entities/category.entity';
+import { CommodityUnitRepository } from './repositories/commodityUnits.repository';
+import { CommodityUnitService } from './services/commodityUnit.service';
+import { CommodityUnitController } from './controller/commodityUnit.controler';
+import { CommodityUnit } from './entities/commodityUnit.entity';
+import { PurchasePeriod } from './entities/purchasePeriod.entity';
+import { PurchasePeriodRepository } from './repositories/purchasePeriod.repository';
+import { PurchasePeriodItem } from './entities/purchasePeriodItem.entity';
+import { PurchasePeriodItemRepository } from './repositories/purchasePeriodItems.repository';
+import { PurchasePeriodService } from './services/purchasePeriod.service';
+import { PurchasePeriodItemService } from './services/purchasedPeriodItem.service';
+import { PurchasePeriodController } from './controller/purchasePeriod.controller';
+import { PurchasePeriodItemController } from './controller/purchasePeriodItem.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(configService.createTypeOrmOptions()),
-    TypeOrmModule.forFeature([User, Group, UserGroup]),
+    TypeOrmModule.forFeature([
+      User,
+      Group,
+      UserGroup,
+      Commodity,
+      Category,
+      CommodityUnit,
+      PurchasePeriod,
+      PurchasePeriodItem,
+    ]),
     JwtModule.register({
       global: true,
       secret: 'value',
       signOptions: { expiresIn: '600000s' },
     }),
   ],
-  controllers: [UserController],
+  controllers: [
+    UserController,
+    CommodityController,
+    CategoryController,
+    CommodityUnitController,
+    PurchasePeriodController,
+    PurchasePeriodItemController,
+  ],
   providers: [
     {
       provide: APP_FILTER,
@@ -41,9 +77,20 @@ import { RolesGuard } from './guards/roleGuard';
     },
 
     UserService,
+    CommodityService,
+    CategoryService,
+    CommodityUnitService,
+    PurchasePeriodService,
+    PurchasePeriodItemService,
+
+    CommodityRepository,
+    CategoryRepository,
     UserRepository,
     GroupRepository,
     UserGroupRepository,
+    CommodityUnitRepository,
+    PurchasePeriodRepository,
+    PurchasePeriodItemRepository,
   ],
 })
 export class AppModule {}

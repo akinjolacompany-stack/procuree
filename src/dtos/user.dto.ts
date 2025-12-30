@@ -135,9 +135,4 @@ export class TokenDto {
   groupId?: string;
 }
 
-export class UserFilterDto extends BaseFilterDto {
-  @ApiPropertyOptional()
-  @IsString()
-  @IsOptional()
-  searchQuery?: string;
-}
+export class UserFilterDto extends BaseFilterDto {}

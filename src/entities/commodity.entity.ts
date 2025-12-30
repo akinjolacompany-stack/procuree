@@ -1,57 +1,49 @@
-// import {
-//   Entity,
-//   Column,
-//   PrimaryGeneratedColumn,
-//   Index,
-//   OneToMany,
-//   ManyToOne,
-// } from 'typeorm';
-// import { Base } from './base';
-// import { Group } from './group.entity';
-// import { CommodityUnit } from './commodity_unit.entity';
-// import { PriceVersion } from './price_version.entity';
+import {
+  Entity,
+  Column,
+  Index,
+  OneToMany,
+  ManyToOne,
+} from 'typeorm';
+import { Base } from './base';
+import { Group } from './group.entity';
+import { CommodityUnit } from './commodityUnit.entity';
+import { Category } from './category.entity';
 
-// @Entity('commodities')
-// @Index(['groupId', 'name'], { unique: true }) // one commodity name per group
-// export class Commodity extends Base {
-//   @PrimaryGeneratedColumn('uuid')
-//   id!: string;
+@Entity('commodities')
+@Index(['groupId']) // one commodity name per group
+export class Commodity extends Base {
+  // 🔹 Multi-tenancy: belongs to one Group (Admin's market group)
+  @Column('uuid')
+  @Index()
+  groupId!: string;
 
-//   // 🔹 Multi-tenancy: belongs to one Group (Admin's market group)
-//   @Column('uuid')
-//   @Index()
-//   groupId!: string;
+  @ManyToOne(() => Group, { onDelete: 'CASCADE' })
+  group!: Group;
 
-//   @ManyToOne(() => Group, { onDelete: 'CASCADE' })
-//   group!: Group;
+  // 🔹 Commodity name (e.g. "Onions", "Tomatoes")
+  @Column({ type: 'varchar', length: 100 })
+  name!: string;
 
-//   // 🔹 Commodity name (e.g. "Onions", "Tomatoes")
-//   @Column({ type: 'varchar', length: 100 })
-//   name!: string;
+  // 🔹 Optional short or long description
+  @Column({ type: 'text', nullable: true })
+  description?: string;
 
-//   // 🔹 Optional short or long description
-//   @Column({ type: 'text', nullable: true })
-//   description?: string;
+  // 🔹 Whether the commodity is active and available for ordering
+  @Column({ type: 'boolean', default: true })
+  isActive!: boolean;
 
-//   // 🔹 Whether the commodity is active and available for ordering
-//   @Column({ type: 'boolean', default: true })
-//   isActive!: boolean;
+  @Column({ type: 'uuid', nullable: true })
+  @Index()
+  categoryId?: string | null;
 
-//   // 🔹 Category (optional)
-//   @Column({ type: 'varchar', length: 100, nullable: true })
-//   category?: string;
+  @ManyToOne(() => Category, { onDelete: 'SET NULL' })
+  category?: Category | null;
 
-//   // 🔹 Units allowed for this commodity (1:N)
-//   @OneToMany(() => CommodityUnit, (u) => u.commodity, {
-//     cascade: true,
-//     eager: false,
-//   })
-//   units!: CommodityUnit[];
-
-//   // 🔹 Price history (time-versioned)
-//   @OneToMany(() => PriceVersion, (pv) => pv.commodity, {
-//     cascade: true,
-//     eager: false,
-//   })
-//   priceVersions!: PriceVersion[];
-// }
+  // 🔹 Units allowed for this commodity (1:N)
+  @OneToMany(() => CommodityUnit, (u) => u.commodity, {
+    cascade: true,
+    eager: false,
+  })
+  units!: CommodityUnit[];
+}

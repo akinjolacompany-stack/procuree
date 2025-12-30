@@ -1,23 +1,15 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
-  HttpException,
-  HttpStatus,
-  InternalServerErrorException,
   Param,
   Patch,
   Post,
   Query,
-  UseFilters,
-  UseGuards,
 } from '@nestjs/common';
-import { AppService } from '../app.service';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { Role, SwaggerApiEnumTags } from '../common/index.enum';
+import { RoleEnum, SwaggerApiEnumTags } from '../common/index.enum';
 import {
   CreateAdminUser,
   CreateUser,
@@ -27,7 +19,6 @@ import {
   UserDto,
   UserFilterDto,
 } from 'src/dtos/user.dto';
-import { HttpExceptionFilter } from 'src/middleware/exception.filter';
 import { UserService } from 'src/services/user.services';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
 import { User } from 'src/entities/user.entity';
@@ -64,11 +55,11 @@ export class UserController {
   loginUser(
     @Body() loginUserDto: LoginUserDto,
   ): Promise<StandardResopnse<TokenDto>> {
-    return this.userService.LoginProcureeUser(loginUserDto);
+    return this.userService.LoginPatronUser(loginUserDto);
   }
   @Post('admin/login')
   @Public()
-  loginaDMINUser(
+  loginAdminUser(
     @Body() userDto: UserDto,
   ): Promise<StandardResopnse<TokenDto>> {
     return this.userService.LoginAdminUser(userDto);
@@ -83,13 +74,13 @@ export class UserController {
   }
 
   @Delete(':id')
-  @Roles(Role.ADMIN)
+  @Roles(RoleEnum.ADMIN)
   deleteUser(@Param('id') id: string): Promise<StandardResopnse<DeleteResult>> {
     return this.userService.deleteUser(id);
   }
 
   @Get()
-  @Roles(Role.ADMIN)
+  @Roles(RoleEnum.ADMIN)
   async findUsers(
     @Query() paginationDto: PaginationDto,
     @Query() userFilterDto: UserFilterDto,

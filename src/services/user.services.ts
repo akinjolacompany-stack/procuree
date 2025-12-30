@@ -25,7 +25,7 @@ import { Group } from 'src/entities/group.entity';
 import { GroupRepository } from 'src/repositories/group.repository';
 import { generateInviteCode } from 'src/utils';
 import { DeleteResult } from 'typeorm';
-import { Role } from 'src/common/index.enum';
+import { RoleEnum } from 'src/common/index.enum';
 import { UserGroup } from 'src/entities/user_group.entity';
 
 @Injectable()
@@ -62,7 +62,7 @@ export class UserService {
     const existingUserGroup =
       await this.userGroupRepository.findUserGroupByEmailAndRole(
         createUser.email,
-        Role.ADMIN,
+        RoleEnum.ADMIN,
       );
 
     if (existingUserGroup) {
@@ -100,7 +100,7 @@ export class UserService {
       await userGroupTxRepo.save({
         userId: userCreated.id,
         groupId: groupCreated.id,
-        role: Role.ADMIN,
+        role: RoleEnum.ADMIN,
       });
     });
 
@@ -158,7 +158,7 @@ export class UserService {
       await userGroupTxRepo.save({
         userId: userCreated.id,
         groupId: _existingGroup.id,
-        role: Role.PROCUREE,
+        role: RoleEnum.PATRON,
       });
     });
 
@@ -218,9 +218,6 @@ export class UserService {
       userFilterDto,
     );
 
-    
-
-
     return {
       data: result,
       code: 200,
@@ -229,17 +226,16 @@ export class UserService {
   }
 
   async LoginAdminUser(user: UserDto) {
-    
     const callBack = async () =>
       await this.userGroupRepository.findUserGroupByEmailAndRole(
         user.email,
-        Role.ADMIN,
+        RoleEnum.ADMIN,
       );
 
     return this.LoginUser(user, callBack);
   }
 
-  async LoginProcureeUser(loginUser: LoginUserDto) {
+  async LoginPatronUser(loginUser: LoginUserDto) {
     const group = await this.groupRepository.findGroupByInviteCode(
       loginUser.inviteCode,
     );
@@ -251,7 +247,7 @@ export class UserService {
     const callBack = async () =>
       await this.userGroupRepository.findUserGroupByEmailAndRole(
         loginUser.email,
-        Role.PROCUREE,
+        RoleEnum.PATRON,
         group.id,
       );
 
@@ -262,7 +258,6 @@ export class UserService {
     loginUser: LoginUserDto | UserDto,
     callBack: () => Promise<UserGroup>,
   ): Promise<StandardResopnse<TokenDto>> {
-
     const userGroup = await callBack();
 
     if (!userGroup) {

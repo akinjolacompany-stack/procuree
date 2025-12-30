@@ -14,8 +14,6 @@ export class GroupRepository extends BaseRepository<Group> {
     super(dataSource, repo);
   }
 
-  
-
   async findGroupByInviteCode(inviteCode: string) {
     return this.repo.findOne({ where: { inviteCode } });
   }

@@ -18,7 +18,7 @@ export class QueryBuilderHelper<T> {
   }
 
   applyRelations(relations: Relation[]) {
-    relations.forEach((r) => this.qb.innerJoinAndSelect(r.path, r.alias));
+    relations.forEach((r) => this.qb.leftJoinAndSelect(r.path, r.alias));
     return this;
   }
 
@@ -139,6 +139,17 @@ export class QueryBuilderHelper<T> {
     }
 
     return this;
+  }
+
+  async findOne(alias?: string): Promise<T | null> {
+    const qb = this.qb;
+
+    if (this.groupId && alias)
+      this.qb.andWhere(`${alias}.groupId = :groupId`, {
+        groupId: this.groupId,
+      });
+
+    return qb.getOne();
   }
 
   async paginate(
