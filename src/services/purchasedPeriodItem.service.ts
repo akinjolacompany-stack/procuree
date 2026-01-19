@@ -12,7 +12,7 @@ import {
   PurchasePeriodItemFilterDto,
   UpdatePurchasePeriodItemDto,
 } from 'src/dtos/purchasePeriodItem.dto';
-import { PurchasePeriodItem } from 'src/entities/PurchasePeriodItem.entity';
+import { PurchasePeriodItem } from 'src/entities/purchasePeriodItem.entity';
 
 import { PurchasePeriodItemRepository } from 'src/repositories/purchasePeriodItems.repository';
 import { CommodityUnitRepository } from 'src/repositories/commodityUnits.repository';

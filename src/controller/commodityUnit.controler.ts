@@ -14,7 +14,7 @@ import {
   CommodityUnitDto,
   CommodityUnitFilterDto,
   UpdateCommodityUnitDto,
-} from 'src/dtos/CommodityUnit.dto';
+} from 'src/dtos/commodityUnit.dto';
 import { CommodityUnitService } from 'src/services/commodityUnit.service';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
 import { StandardResopnse } from 'src/common';

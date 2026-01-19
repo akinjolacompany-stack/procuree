@@ -14,7 +14,7 @@ import {
   CategoryDto,
   CategoryFilterDto,
   UpdateCategoryDto,
-} from 'src/dtos/Category.dto';
+} from 'src/dtos/category.dto';
 import { CategoryService } from 'src/services/category.service';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
 import { StandardResopnse } from 'src/common';

@@ -14,7 +14,7 @@ import {
   UpdateCommodityDto,
 } from 'src/dtos/commodity.dto';
 import { CommodityRepository } from 'src/repositories/commodity.repository';
-import { Commodity } from 'src/entities/Commodity.entity';
+import { Commodity } from 'src/entities/commodity.entity';
 
 import { CommodityUnitFilterDto } from 'src/dtos/commodityUnit.dto';
 import { CommodityUnitRepository } from 'src/repositories/commodityUnits.repository';

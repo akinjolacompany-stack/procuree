@@ -14,13 +14,13 @@ import {
   CommodityDto,
   CommodityFilterDto,
   UpdateCommodityDto,
-} from 'src/dtos/Commodity.dto';
+} from 'src/dtos/commodity.dto';
 import { CommodityService } from 'src/services/commodity.service';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
 import { StandardResopnse } from 'src/common';
 import { DeleteResult } from 'typeorm';
 import { Roles } from 'src/decorators/roles.decorator';
-import { Commodity } from 'src/entities/Commodity.entity';
+import { Commodity } from 'src/entities/commodity.entity';
 import { CommodityUnitFilterDto } from 'src/dtos/commodityUnit.dto';
 import { CommodityUnit } from 'src/entities/commodityUnit.entity';
 

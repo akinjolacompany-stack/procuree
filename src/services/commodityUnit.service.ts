@@ -14,7 +14,7 @@ import {
   UpdateCommodityUnitDto,
 } from 'src/dtos/commodityUnit.dto';
 import { CommodityUnitRepository } from 'src/repositories/commodityUnits.repository';
-import { CommodityUnit } from 'src/entities/CommodityUnit.entity';
+import { CommodityUnit } from 'src/entities/commodityUnit.entity';
 
 @Injectable()
 export class CommodityUnitService {
