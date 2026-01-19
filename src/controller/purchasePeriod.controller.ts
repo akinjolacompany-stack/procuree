@@ -27,7 +27,7 @@ import {
 } from 'src/dtos/purchasePeriodItem.dto';
 import { PurchasePeriodItem } from 'src/entities/purchasePeriodItem.entity';
 
-@Controller('PurchasePeriod')
+@Controller('market-run')
 @ApiTags(SwaggerApiEnumTags.PURCHASEPERIOD)
 @Roles(RoleEnum.ADMIN)
 @ApiBearerAuth()
@@ -39,6 +39,19 @@ export class PurchasePeriodController {
     @Body() creatPurchasePeriod: PurchasePeriodDto,
   ): Promise<StandardResopnse<PurchasePeriodDto>> {
     return this.PurchasePeriodService.createPurchasePeriod(creatPurchasePeriod);
+  }
+  @Post('create-publish')
+  CreateAndPublishPurchasePeriod(
+    @Body() creatPurchasePeriod: PurchasePeriodDto,
+  ): Promise<StandardResopnse<PurchasePeriodDto>> {
+    return this.PurchasePeriodService.createPurchasePeriod(creatPurchasePeriod);
+  }
+
+  @Post('/:id/publish')
+  PublishPurchasePeriod(
+    @Param('id') id: string,
+  ): Promise<StandardResopnse<PurchasePeriodDto>> {
+    return this.PurchasePeriodService.publishPurchasePeriod(id);
   }
 
   @Patch(':id')
@@ -70,7 +83,7 @@ export class PurchasePeriodController {
     );
   }
 
-  @Get(':id/purchasePeriodItems')
+  @Get(':id/market-run-commodities')
   async findPurchasePeriodUnit(
     @Query() paginationDto: PaginationDto,
     @Query() PurchasePeriodFilterDto: PurchasePeriodItemFilterDto,

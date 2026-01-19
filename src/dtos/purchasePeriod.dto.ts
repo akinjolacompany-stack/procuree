@@ -1,7 +1,11 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsArray, IsDateString, IsNotEmpty, IsOptional, IsString, MinLength, ValidateNested } from 'class-validator';
 import { Trim } from 'src/decorators/trim.decorator';
 import { BaseFilterDto } from './baseFilter.dto';
+import { PurchasePeriodItemDto } from './purchasePeriodItem.dto';
+import { Type } from 'class-transformer';
+
+
 
 export class PurchasePeriodDto {
   @ApiProperty()
@@ -10,21 +14,31 @@ export class PurchasePeriodDto {
   @Trim()
   name: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '2025-01-10T00:00:00Z',
+  })
   @IsNotEmpty()
-  @IsString()
-  startAt: string;
+  @IsDateString()
+  requestEndDate: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    example: '2025-01-15T00:00:00Z',
+  })
   @IsNotEmpty()
-  @IsString()
-  endAt: string;
+  @IsDateString()
+  marketRunDate: string;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsString()
-  attachDeadline: string;
+  @ApiProperty({
+    type: [PurchasePeriodItemDto],
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PurchasePeriodItemDto)
+  marketRunCommodities: PurchasePeriodItemDto[];
 }
+
+
+
 
 export class UpdatePurchasePeriodDto extends PartialType(PurchasePeriodDto) {}
 

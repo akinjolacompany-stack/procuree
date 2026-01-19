@@ -34,6 +34,7 @@ import { PurchasePeriodService } from './services/purchasePeriod.service';
 import { PurchasePeriodItemService } from './services/purchasedPeriodItem.service';
 import { PurchasePeriodController } from './controller/purchasePeriod.controller';
 import { PurchasePeriodItemController } from './controller/purchasePeriodItem.controller';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { PurchasePeriodItemController } from './controller/purchasePeriodItem.co
       secret: 'value',
       signOptions: { expiresIn: '600000s' },
     }),
+    MailModule, // 👈 ADD THIS
   ],
   controllers: [
     UserController,

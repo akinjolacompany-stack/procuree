@@ -19,11 +19,6 @@ export class PurchasePeriodItemDto {
 
   @ApiProperty()
   @IsOptional()
-  @IsString()
-  displayLabel: string;
-
-  @ApiProperty()
-  @IsOptional()
   @IsNumber()
   @ValidateIf((_, value) => value !== null)
   @Min(1)

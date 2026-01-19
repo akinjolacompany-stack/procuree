@@ -22,7 +22,7 @@ import { Roles } from 'src/decorators/roles.decorator';
 import { PurchasePeriodItem } from 'src/entities/purchasePeriodItem.entity';
 import { PurchasePeriodItemService } from 'src/services/purchasedPeriodItem.service';
 
-@Controller('PurchasePeriodItem')
+@Controller('market-run-commodities')
 @ApiTags(SwaggerApiEnumTags.PURCHASEPERIODITEM)
 @Roles(RoleEnum.ADMIN)
 @ApiBearerAuth()

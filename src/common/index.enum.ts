@@ -4,8 +4,8 @@ export enum SwaggerApiEnumTags {
   CATEGORY = 'Category',
   COMMODITY = 'Commodity',
   COMMODITYUNIT = 'Commodity Unit',
-  PURCHASEPERIOD = 'Purchase Period ',
-  PURCHASEPERIODITEM = 'Purchase Period Item',
+  PURCHASEPERIOD = 'Market Run ',
+  PURCHASEPERIODITEM = 'Market Run Commodities',
 }
 
 export enum RoleEnum {
@@ -24,6 +24,9 @@ export enum PurchasePeriodStatus {
   OPEN = 'OPEN', // Procurees can place/modify requests
   CLOSED = 'CLOSED', // Requests locked; admin going to market
   FINALIZED = 'FINALIZED', // Allocations + fulfillment recorded
+  PUBLISHED = 'PUBLISHED',
+  SAVED = 'SAVED',
+  RECONCILED = 'RECONCILED',
 }
 
 export enum PurchasePeriodItemStatus {

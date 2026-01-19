@@ -1,13 +1,7 @@
-import {
-  Entity,
-  Column,
-  Index,
-  ManyToOne,
-} from 'typeorm';
+import { Entity, Column, Index, ManyToOne } from 'typeorm';
 import { Base } from './base';
 import { Group } from './group.entity';
 import { PurchasePeriodStatus } from 'src/common/index.enum';
-
 
 @Entity('purchase_periods')
 @Index(['groupId', 'status'])
@@ -20,28 +14,25 @@ export class PurchasePeriod extends Base {
   group!: Group;
 
   @Column({ type: 'varchar', length: 120 })
-  name!: string; 
+  name!: string;
   // Example: "Saturday Run - Nov 22, 2025"
   // Or "Week 14 Market Run"
 
-  @Column({ type: 'timestamptz' })
-  startAt!: Date;
-  // When requests can start
+  @Column({ type: 'timestamptz', nullable: true })
+  requestStartDate!: Date;
 
-  @Column({ type: 'timestamptz' })
-  endAt!: Date;
-  // When requests stop (Procuree can't modify after this)
+  @Column({ type: 'timestamptz', nullable: true })
+  requestEndDate!: Date;
 
   @Column({
     type: 'enum',
     enum: PurchasePeriodStatus,
-    default: PurchasePeriodStatus.DRAFT,
+    default: PurchasePeriodStatus.SAVED,
   })
   status!: PurchasePeriodStatus;
 
   @Column({ type: 'timestamptz', nullable: true })
-  attachDeadline?: Date | null;
-  // Optional: time Procurees must attach evidence of payment (future feature)
+  marketRunDate?: Date | null;
 
   @Column({ type: 'boolean', default: false })
   allocationsLocked!: boolean;

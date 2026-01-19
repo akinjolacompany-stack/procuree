@@ -18,6 +18,8 @@ import { PurchasePeriod } from 'src/entities/purchasePeriod.entity';
 import { PurchasePeriodItemFilterDto } from 'src/dtos/purchasePeriodItem.dto';
 import { PurchasePeriodItem } from 'src/entities/purchasePeriodItem.entity';
 import { PurchasePeriodItemRepository } from 'src/repositories/purchasePeriodItems.repository';
+import { PurchasePeriodStatus } from 'src/common/index.enum';
+import { StringDecoder } from 'string_decoder';
 
 @Injectable()
 export class PurchasePeriodService {
@@ -27,20 +29,90 @@ export class PurchasePeriodService {
   ) {}
 
   async createPurchasePeriod(
-    PurchasePeriodDto: PurchasePeriodDto,
+    purchasePeriodDto: PurchasePeriodDto,
+    publish: boolean = false,
   ): Promise<StandardResopnse<PurchasePeriodDto>> {
     const existingPurchasePeriod = await this.purchasePeriodRepository.findOne({
-      name: PurchasePeriodDto.name,
+      name: purchasePeriodDto.name,
     });
 
     if (existingPurchasePeriod) {
       throw new UnprocessableEntityException('Name Already Exists');
     }
 
-    await this.purchasePeriodRepository.create(PurchasePeriodDto);
+    await this.purchasePeriodItemRepository.transaction(
+      async (purchaseItemTxRepo) => {
+        const { marketRunCommodities, ...rest } = purchasePeriodDto;
+
+        const purchasePeriodTxRepo =
+          purchaseItemTxRepo.manager.getRepository(PurchasePeriod);
+
+        const marketRunCommodityTxRepo =
+          purchaseItemTxRepo.manager.getRepository(PurchasePeriodItem);
+
+        const purchasePeriodData = publish
+          ? {
+              ...rest,
+              status: PurchasePeriodStatus.PUBLISHED,
+            }
+          : {
+              ...rest,
+              status: PurchasePeriodStatus.SAVED,
+              requestStartDate: new Date(),
+            };
+
+        // 1. Create & save parent
+        const purchasePeriod = purchasePeriodTxRepo.create(purchasePeriodData);
+
+        const purchasePeriodCreated =
+          await purchasePeriodTxRepo.save(purchasePeriod);
+
+        // 2. Save child array (if present)
+        if (
+          Array.isArray(marketRunCommodities) &&
+          marketRunCommodities.length > 0
+        ) {
+          const commodities = marketRunCommodities.map((item) =>
+            marketRunCommodityTxRepo.create({
+              ...item,
+              purchasePeriodId: purchasePeriodCreated.id,
+            }),
+          );
+
+          await marketRunCommodityTxRepo.save(commodities);
+        }
+
+        return purchasePeriodCreated;
+      },
+    );
 
     return {
-      data: PurchasePeriodDto,
+      data: purchasePeriodDto,
+      code: 200,
+      message: 'Success',
+    };
+  }
+
+  async publishPurchasePeriod(id: String): Promise<StandardResopnse<any>> {
+    const existingPurchasePeriod =
+      await this.purchasePeriodRepository.findById(id);
+
+    if (!existingPurchasePeriod) {
+      throw new NotFoundException('Market Run Not Found');
+    }
+
+    if (existingPurchasePeriod.status !== PurchasePeriodStatus.SAVED) {
+      throw new UnprocessableEntityException(
+        'Invalide Request: Market Run has been published',
+      );
+    }
+
+    await this.purchasePeriodRepository.update(id, {
+      status: PurchasePeriodStatus.PUBLISHED,
+    });
+
+    return {
+      data: null,
       code: 200,
       message: 'Success',
     };
@@ -56,6 +128,12 @@ export class PurchasePeriodService {
 
     if (existingPurchasePeriod) {
       throw new UnprocessableEntityException('Name Already Exists');
+    }
+
+    if (existingPurchasePeriod.status === PurchasePeriodStatus.CLOSED) {
+      throw new UnprocessableEntityException(
+        'Invalid Request: Market Run has is Already Close',
+      );
     }
 
     await this.purchasePeriodRepository.update(id, updatePurchasePeriodDto);
