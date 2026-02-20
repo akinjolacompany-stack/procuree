@@ -11,7 +11,7 @@ import {
   RequestDto,
   RequestFilterDto,
   UpdateRequestDto,
-} from 'src/dtos/Request.dto';
+} from 'src/dtos/request.dto';
 import { RequestRepository } from 'src/repositories/request.repository';
 import { Request } from 'src/entities/request.entity';
 

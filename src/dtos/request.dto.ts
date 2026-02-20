@@ -8,9 +8,8 @@ import {
   MinLength,
   ValidateNested,
 } from 'class-validator';
-import { Trim } from 'src/decorators/trim.decorator';
 import { BaseFilterDto } from './baseFilter.dto';
-import { RequestItemDto } from './RequestItem.dto';
+import { RequestItemDto } from './requestItem.dto';
 import { Type } from 'class-transformer';
 
 export class RequestDto {
