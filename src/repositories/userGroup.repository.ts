@@ -54,7 +54,7 @@ export class UserGroupRepository extends BaseRepository<UserGroup> {
     role: RoleEnum,
     groupId?: string,
   ) {
-    const _where = { user: { email }, role };
+    const _where = { user: { email, role} };
     return this.repo.findOne({
       where: groupId ? { ..._where, groupId } : _where, // nested where on relation
       relations: ['user'], // load the relations you need

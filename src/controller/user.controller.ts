@@ -50,14 +50,14 @@ export class UserController {
     return this.userService.createAdminUser(createAdminUser);
   }
 
-  @Post('login')
-  @Public()
-  loginUser(
-    @Body() loginUserDto: LoginUserDto,
-  ): Promise<StandardResopnse<TokenDto>> {
-    return this.userService.LoginPatronUser(loginUserDto);
-  }
-  @Post('admin/login')
+  // @Post('login')
+  // @Public()
+  // loginUser(
+  //   @Body() loginUserDto: LoginUserDto,
+  // ): Promise<StandardResopnse<TokenDto>> {
+  //   return this.userService.LoginPatronUser(loginUserDto);
+  // }
+  @Post('signin')
   @Public()
   loginAdminUser(
     @Body() userDto: UserDto,

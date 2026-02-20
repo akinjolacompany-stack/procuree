@@ -35,6 +35,14 @@ import { PurchasePeriodItemService } from './services/purchasedPeriodItem.servic
 import { PurchasePeriodController } from './controller/purchasePeriod.controller';
 import { PurchasePeriodItemController } from './controller/purchasePeriodItem.controller';
 import { MailModule } from './mail/mail.module';
+import { Request } from './entities/request.entity';
+import { RequestItem } from './entities/requestItem.entity';
+import { RequestRepository } from './repositories/request.repository';
+import { RequestItemRepository } from './repositories/requestItem.repository';
+import { requestService } from './services/request.service';
+import { RequestItemService } from './services/requestItem.service';
+import { RequestController } from './controller/request.controller';
+import { RequestItemController } from './controller/requestItem.controller';
 
 @Module({
   imports: [
@@ -48,6 +56,8 @@ import { MailModule } from './mail/mail.module';
       CommodityUnit,
       PurchasePeriod,
       PurchasePeriodItem,
+      Request,
+      RequestItem,
     ]),
     JwtModule.register({
       global: true,
@@ -63,6 +73,8 @@ import { MailModule } from './mail/mail.module';
     CommodityUnitController,
     PurchasePeriodController,
     PurchasePeriodItemController,
+    RequestController,
+    RequestItemController,
   ],
   providers: [
     {
@@ -84,6 +96,8 @@ import { MailModule } from './mail/mail.module';
     CommodityUnitService,
     PurchasePeriodService,
     PurchasePeriodItemService,
+    requestService,
+    RequestItemService,
 
     CommodityRepository,
     CategoryRepository,
@@ -93,6 +107,8 @@ import { MailModule } from './mail/mail.module';
     CommodityUnitRepository,
     PurchasePeriodRepository,
     PurchasePeriodItemRepository,
+    RequestRepository,
+    RequestItemRepository,
   ],
 })
 export class AppModule {}

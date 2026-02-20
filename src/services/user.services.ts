@@ -227,10 +227,7 @@ export class UserService {
 
   async LoginAdminUser(user: UserDto) {
     const callBack = async () =>
-      await this.userGroupRepository.findUserGroupByEmailAndRole(
-        user.email,
-        RoleEnum.ADMIN,
-      );
+      await this.userRepository.findUserByEmail(user.email);
 
     return this.LoginUser(user, callBack);
   }
@@ -245,26 +242,25 @@ export class UserService {
     }
 
     const callBack = async () =>
-      await this.userGroupRepository.findUserGroupByEmailAndRole(
-        loginUser.email,
-        RoleEnum.PATRON,
-        group.id,
-      );
+      await this.userRepository.findUserByEmail(loginUser.email);
 
     return this.LoginUser(loginUser, callBack);
   }
 
   async LoginUser(
     loginUser: LoginUserDto | UserDto,
-    callBack: () => Promise<UserGroup>,
+    callBack: () => Promise<User>,
   ): Promise<StandardResopnse<TokenDto>> {
-    const userGroup = await callBack();
+    const user = await callBack();
 
-    if (!userGroup) {
+    if (!user) {
       throw new NotFoundException('User not found');
     }
 
-    const user = userGroup?.user;
+    const userGroup = await this.userGroupRepository.findUserGroupByEmailAndRole(
+      loginUser.email,
+      RoleEnum.ADMIN,
+    );
 
     const isMatch = await bcrypt.compare(loginUser.password, user.passwordHash);
 
@@ -278,7 +274,7 @@ export class UserService {
       lastName: user.lastName,
       phone: user.phone,
       email: user.email,
-      role: userGroup.role,
+      role: user.role,
       groupId: userGroup.groupId,
     };
     return {

@@ -6,6 +6,8 @@ export enum SwaggerApiEnumTags {
   COMMODITYUNIT = 'Commodity Unit',
   PURCHASEPERIOD = 'Market Run ',
   PURCHASEPERIODITEM = 'Market Run Commodities',
+  REQUEST = 'Request',
+  REQUESTITEM = 'Request Items',
 }
 
 export enum RoleEnum {
@@ -33,4 +35,18 @@ export enum PurchasePeriodItemStatus {
   ACTIVE = 'ACTIVE', // visible & orderable
   HIDDEN = 'HIDDEN', // not visible to Procurees (e.g., draft)
   DISABLED = 'DISABLED', // temporarily disabled for this period
+}
+
+export enum RequestStatus {
+  DRAFT = 'DRAFT',
+  SUBMITTED = 'SUBMITTED',
+  CANCELLED = 'CANCELLED',
+  CONFIRMED = 'CONFIRMED',
+}
+
+
+export enum PriceVarianceAction {
+  BUY_MAXIMUM = 'BUY_MAXIMUM',
+  BUY_REQUESTED = 'BUY_REQUESTED',
+  DO_NOT_BUY = 'DO_NOT_BUY',
 }

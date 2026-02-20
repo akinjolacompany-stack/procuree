@@ -1,7 +1,6 @@
 import {
   Injectable,
   NotFoundException,
-  UnprocessableEntityException,
 } from '@nestjs/common';
 import { StandardResopnse } from 'src/common';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
