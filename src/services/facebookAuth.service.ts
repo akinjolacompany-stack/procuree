@@ -21,7 +21,6 @@ export class FacebookStrategy extends PassportStrategy(Strategy, 'facebook') {
 
     const { id, name, emails } = profile;
 
-    console.log(profile);
     
     const user = {
       facebookId: id,

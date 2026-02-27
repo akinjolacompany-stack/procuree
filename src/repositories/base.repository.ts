@@ -24,7 +24,6 @@ export class BaseRepository<T extends { id: any }> {
   async create(data: DeepPartial<T>, hasGroupId = true): Promise<T> {
     const groupId = this.getGroupId();
 
-    console.log('groupId', groupId, hasGroupId);
 
     const entity = hasGroupId
       ? this.repo.create({ ...data, groupId: groupId })

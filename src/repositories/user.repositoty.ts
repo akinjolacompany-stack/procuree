@@ -42,6 +42,6 @@ export class UserRepository extends BaseRepository<User> {
       })
       .applySorting('user.created_at', options.sortOrder);
 
-    return helper.paginate(options, );
+    return helper.paginate(options, 'user');
   }
 }

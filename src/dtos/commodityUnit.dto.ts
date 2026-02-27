@@ -23,19 +23,19 @@ export class CommodityUnitDto {
   @IsEnum(UnitType)
   type: UnitType;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  @Min(1)
-  minQty: number;
+  // @ApiProperty()
+  // @IsNotEmpty()
+  // @IsNumber()
+  // @Min(1)
+  // minQty: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
-  @IsNumber()
-  @MaxGreaterThanMin('minQty', {
-    message: 'maxQty must be greater than or equal to minQty',
-  })
-  maxQty: number;
+  // @ApiProperty()
+  // @IsNotEmpty()
+  // @IsNumber()
+  // @MaxGreaterThanMin('minQty', {
+  //   message: 'maxQty must be greater than or equal to minQty',
+  // })
+  // maxQty: number;
 
   @ApiProperty()
   @IsNotEmpty()

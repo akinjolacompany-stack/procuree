@@ -36,6 +36,6 @@ export class PurchasePeriodItemRepository extends BaseRepository<PurchasePeriodI
       helper.applyFilter({ 'purchasePeriodItem.purchasePeriodId': purchasePeriodId });
     }
 
-    return helper.paginate(options);
+    return helper.paginate(options, 'purchasePeriodItem');
   }
 }

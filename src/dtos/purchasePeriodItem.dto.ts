@@ -18,16 +18,14 @@ export class PurchasePeriodItemDto {
   pricePerUnit: number;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
-  @ValidateIf((_, value) => value !== null)
   @Min(1)
   minQty: number;
 
   @ApiProperty()
-  @IsOptional()
+  @IsNotEmpty()
   @IsNumber()
-  @ValidateIf((_, value) => value !== null)
   @MaxGreaterThanMin('minQty', {
     message: 'maxQty must be greater than or equal to minQty',
   })

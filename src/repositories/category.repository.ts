@@ -31,6 +31,6 @@ export class CategoryRepository extends BaseRepository<Category> {
       })
       .applySorting('category.created_at', options.sortOrder);
 
-    return helper.paginate(options);
+    return helper.paginate(options, 'category', true);
   }
 }

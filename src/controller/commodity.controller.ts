@@ -41,7 +41,7 @@ export class CommodityController {
   @Patch(':id')
   updateCommodity(
     @Body() updateCommodity: UpdateCommodityDto,
-    @Param('id') id: number,
+    @Param('id') id: string,
   ): Promise<StandardResopnse<UpdateCommodityDto>> {
     return this.commodityService.updateCommodity(id, updateCommodity);
   }

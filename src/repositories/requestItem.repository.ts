@@ -38,6 +38,6 @@ export class RequestItemRepository extends BaseRepository<RequestItem> {
       });
     }
 
-    return helper.paginate(options);
+    return helper.paginate(options, 'requestItem');
   }
 }

@@ -32,6 +32,6 @@ export class PurchasePeriodRepository extends BaseRepository<PurchasePeriod> {
       })
       .applySorting('purchasePeriod.created_at', options.sortOrder);
 
-    return helper.paginate(options);
+    return helper.paginate(options, 'purchasePeriod');
   }
 }

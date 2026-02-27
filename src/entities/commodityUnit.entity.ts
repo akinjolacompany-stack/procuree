@@ -26,11 +26,11 @@ export class CommodityUnit extends Base {
   @Column({ type: 'varchar', length: 50 })
   name!: string;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  minQty?: number;
+  // @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  // minQty?: number;
 
-  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
-  maxQty?: number;
+  // @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  // maxQty?: number;
 
   @Column({ type: 'boolean', default: true })
   isActive!: boolean;

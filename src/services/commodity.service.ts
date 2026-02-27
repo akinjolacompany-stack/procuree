@@ -6,11 +6,12 @@ import {
 } from '@nestjs/common';
 import { StandardResopnse } from 'src/common';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 
 import {
   CommodityDto,
   CommodityFilterDto,
+  CommodityUnitItemDto,
   UpdateCommodityDto,
 } from 'src/dtos/commodity.dto';
 import { CommodityRepository } from 'src/repositories/commodity.repository';
@@ -19,6 +20,7 @@ import { Commodity } from 'src/entities/commodity.entity';
 import { CommodityUnitFilterDto } from 'src/dtos/commodityUnit.dto';
 import { CommodityUnitRepository } from 'src/repositories/commodityUnits.repository';
 import { CommodityUnit } from 'src/entities/commodityUnit.entity';
+import { RequestContext } from 'src/common/context/requestContext';
 
 @Injectable()
 export class CommodityService {
@@ -28,38 +30,99 @@ export class CommodityService {
   ) {}
 
   async createCommodity(
-    CommodityDto: CommodityDto,
+    commodityDto: CommodityDto,
   ): Promise<StandardResopnse<CommodityDto>> {
-    const existingCommodity = await this.commodityRepository.findOne({
-      name: CommodityDto.name,
-    });
-
-    if (existingCommodity) {
-      throw new UnprocessableEntityException('Name Already Exists');
+    const groupId = RequestContext.get('groupId');
+    if (!groupId) {
+      throw new UnauthorizedException('Invalid Request Context');
     }
 
-    await this.commodityRepository.create(CommodityDto);
+    const existingCommodity = await this.commodityRepository.findOne({
+      name: commodityDto.name,
+      groupId,
+    });
+    
+    if (existingCommodity) throw new UnprocessableEntityException('Name Already Exists');
+
+    await this.commodityUnitRepository.transaction(async (txRepo) => {
+      const { commodityUnits, ...rest } = commodityDto;
+      const commodityTxRepo = txRepo.manager.getRepository(Commodity);
+      const commodityUnitTxRepo = txRepo.manager.getRepository(CommodityUnit);
+
+      const commodity = commodityTxRepo.create({
+        ...rest,
+        groupId,
+      });
+
+      const commodityCreated = await commodityTxRepo.save(commodity);
+
+      if (Array.isArray(commodityUnits) && commodityUnits.length > 0) {
+        await this.saveCommodityUnits(
+          commodityUnitTxRepo,
+          commodityCreated.id,
+          groupId,
+          commodityUnits,
+        );
+      }
+    });
 
     return {
-      data: CommodityDto,
+      data: commodityDto,
       code: 200,
       message: 'Success',
     };
   }
 
   async updateCommodity(
-    id: number,
+    id: string,
     updateCommodityDto: UpdateCommodityDto,
   ): Promise<StandardResopnse<UpdateCommodityDto>> {
-    const existingCommodity = await this.commodityRepository.findOne({
-      name: updateCommodityDto.name,
-    });
-
-    if (existingCommodity) {
-      throw new UnprocessableEntityException('Name Already Exists');
+    const groupId = RequestContext.get('groupId');
+    if (!groupId) {
+      throw new UnauthorizedException('Invalid Request Context');
     }
 
-    await this.commodityRepository.update(id, updateCommodityDto);
+    await this.commodityUnitRepository.transaction(async (txRepo) => {
+      const commodityTxRepo = txRepo.manager.getRepository(Commodity);
+      const commodityUnitTxRepo = txRepo.manager.getRepository(CommodityUnit);
+
+      const existingCommodity = await commodityTxRepo.findOne({
+        where: { id, groupId },
+      });
+
+      if (!existingCommodity) {
+        throw new NotFoundException('Commodity Not found');
+      }
+
+      if (updateCommodityDto.name) {
+        const duplicate = await commodityTxRepo.findOne({
+          where: { name: updateCommodityDto.name, groupId },
+        });
+
+        if (duplicate && duplicate.id !== id) {
+          throw new UnprocessableEntityException('Name Already Exists');
+        }
+      }
+
+      const { commodityUnits, ...patch } = updateCommodityDto;
+
+      if (Object.keys(patch).length > 0) {
+        await commodityTxRepo.update(id, patch);
+      }
+
+      if (Array.isArray(commodityUnits)) {
+        await commodityUnitTxRepo.delete({ commodityId: id, groupId });
+
+        if (commodityUnits.length > 0) {
+          await this.saveCommodityUnits(
+            commodityUnitTxRepo,
+            id,
+            groupId,
+            commodityUnits,
+          );
+        }
+      }
+    });
 
     return {
       data: updateCommodityDto,
@@ -116,5 +179,48 @@ export class CommodityService {
       code: 200,
       message: 'Success',
     };
+  }
+
+  private async saveCommodityUnits(
+    commodityUnitTxRepo: Repository<CommodityUnit>,
+    commodityId: string,
+    groupId: string,
+    commodityUnits: CommodityUnitItemDto[],
+  ) {
+    const baseUnitInput = commodityUnits.find((unit) => unit.isBaseUnit);
+    if (!baseUnitInput) {
+      throw new UnprocessableEntityException(
+        'One base unit is required (set isBaseUnit: true)',
+      );
+    }
+
+    const { isBaseUnit, ...basePayload } = baseUnitInput;
+    const baseUnit = commodityUnitTxRepo.create({
+      ...basePayload,
+      commodityId,
+      groupId,
+      conversionFactor: basePayload.conversionFactor ?? 1,
+      baseUnitId: null,
+    });
+
+    const baseUnitCreated = await commodityUnitTxRepo.save(baseUnit);
+    const baseUnitId = baseUnitCreated.id;
+
+    const derivedUnitsPayload = commodityUnits
+      .filter((unit) => !unit.isBaseUnit)
+      .map((unit) => {
+        const { isBaseUnit, ...payload } = unit;
+        return commodityUnitTxRepo.create({
+          ...payload,
+          commodityId,
+          groupId,
+          conversionFactor: payload.conversionFactor ?? 1,
+          baseUnitId,
+        });
+      });
+
+    if (derivedUnitsPayload.length > 0) {
+      await commodityUnitTxRepo.save(derivedUnitsPayload);
+    }
   }
 }

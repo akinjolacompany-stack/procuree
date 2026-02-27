@@ -1,5 +1,5 @@
 // src/common/utils/query-builder.util.ts
-import { SelectQueryBuilder } from 'typeorm';
+import { Brackets, SelectQueryBuilder } from 'typeorm';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
 import { startOfDay, endOfDay, parseISO, isValid } from 'date-fns';
 import { RequestContext } from 'src/common/context/requestContext';
@@ -14,7 +14,6 @@ export class QueryBuilderHelper<T> {
 
   constructor(private readonly qb: SelectQueryBuilder<T>) {
     this.groupId = RequestContext.get('groupId');
-    console.log('✅ Checking Group ID in QueryBuilderHelper:', this.groupId);
   }
 
   applyRelations(relations: Relation[]) {
@@ -154,15 +153,25 @@ export class QueryBuilderHelper<T> {
 
   async paginate(
     options: PaginationDto,
-    alias?: string,
+    alias: string,
+    fetchNullGroups: boolean = false,
   ): Promise<PaginatedRecordsDto<T>> {
     const { per_page: limit, page } = options;
     const skip = (page - 1) * limit;
 
-    if (this.groupId && alias)
-      this.qb.andWhere(`${alias}.groupId = :groupId`, {
-        groupId: this.groupId,
-      });
+    if (this.groupId) {
+      this.qb.andWhere(
+        new Brackets((qb) => {
+          qb.where(`${alias}.groupId = :groupId`, {
+            groupId: this.groupId,
+          });
+
+          if (fetchNullGroups) {
+            qb.orWhere(`${alias}.groupId IS NULL`);
+          }
+        }),
+      );
+    }
 
     const [data, total] = await this.qb
       .skip(skip)

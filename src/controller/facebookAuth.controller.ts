@@ -20,8 +20,6 @@ export class ExternalAUthController {
   @Get('facebook/callback')
   @UseGuards(AuthGuard('facebook'))
   async facebookCallback(@Req() req, @Res() res): Promise<void> {
-    const user = req.user; // Retrieved from the validate function
-    console.log('Authenticated user:', user);
     res.redirect('/dashboard'); // Redirect user after authentication
   }
 }

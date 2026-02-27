@@ -23,26 +23,33 @@ export class CommodityRepository extends BaseRepository<Commodity> {
     commodityFilterDto: CommodityFilterDto,
     categoryId?: string,
   ) {
-    const qb = this.repo.createQueryBuilder('Commodity');
-
-    console.log('commodityFilterDto', commodityFilterDto);
+    const qb = this.repo.createQueryBuilder('commodity');
 
     const helper = new QueryBuilderHelper(qb);
 
     helper
       .applyRelations([
-        { alias: 'category', path: 'Commodity.category' },
-        { alias: 'commodityUnit', path: 'Commodity.units' },
+        { alias: 'category', path: 'commodity.category' },
+        { alias: 'commodityUnit', path: 'commodity.units' },
+      ])
+      .applySelect([
+        'commodity',
+        'category.id',
+        'category.name',
+        'commodityUnit.name',
+        'commodityUnit.id',
+        'commodityUnit.conversionFactor',
+        'commodityUnit.baseUnitId',
       ])
       .applySearch({
-        'Commodity.name': commodityFilterDto.searchQuery,
+        'commodity.name': commodityFilterDto.searchQuery,
       })
-      .applySorting('Commodity.created_at', options.sortOrder);
+      .applySorting('commodity.created_at', options.sortOrder);
 
     if (categoryId) {
-      helper.applyFilter({ 'Commodity.commodityId': categoryId });
+      helper.applyFilter({ 'commodity.commodityId': categoryId });
     }
 
-    return helper.paginate(options);
+    return helper.paginate(options, 'commodity');
   }
 }

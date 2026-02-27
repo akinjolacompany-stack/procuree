@@ -32,6 +32,6 @@ export class RequestRepository extends BaseRepository<Request> {
       })
       .applySorting('Request.created_at', options.sortOrder);
 
-    return helper.paginate(options);
+    return helper.paginate(options, 'Request');
   }
 }

@@ -10,7 +10,7 @@ import { Group } from './group.entity';
 // ])
 @Index(['groupId', 'parentCategoryId'])
 export class Category extends Base {
-  @Column('uuid')
+@Column('uuid', { nullable: true })
   @Index()
   groupId!: string;
 

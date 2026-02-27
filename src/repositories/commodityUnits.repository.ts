@@ -36,6 +36,6 @@ export class CommodityUnitRepository extends BaseRepository<CommodityUnit> {
       helper.applyFilter({ 'commodityUnit.commodityId': commodityId });
     }
 
-    return helper.paginate(options);
+    return helper.paginate(options, 'commodityUnit');
   }
 }

@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { StandardResopnse } from 'src/common';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
 import { DeleteResult } from 'typeorm';
@@ -14,30 +11,17 @@ import {
 import { PurchasePeriodItem } from 'src/entities/purchasePeriodItem.entity';
 
 import { PurchasePeriodItemRepository } from 'src/repositories/purchasePeriodItems.repository';
-import { CommodityUnitRepository } from 'src/repositories/commodityUnits.repository';
 
 @Injectable()
 export class PurchasePeriodItemService {
   constructor(
     private PurchasePeriodItemRepository: PurchasePeriodItemRepository,
-    private commodityUnitRepository: CommodityUnitRepository,
   ) {}
 
   async createPurchasePeriodItem(
     purchasePeriodItemDto: PurchasePeriodItemDto,
   ): Promise<StandardResopnse<PurchasePeriodItemDto>> {
     let _purchasePeriodItemDto = purchasePeriodItemDto;
-
-    const { maxQty, minQty } = await this.commodityUnitRepository.findOne({
-      id: purchasePeriodItemDto.commodityUnitId,
-    });
-
-    if (
-      purchasePeriodItemDto.maxQty !== undefined ||
-      purchasePeriodItemDto.minQty !== undefined
-    ) {
-      _purchasePeriodItemDto = { ..._purchasePeriodItemDto, maxQty, minQty };
-    }
 
     await this.PurchasePeriodItemRepository.create(purchasePeriodItemDto);
 
