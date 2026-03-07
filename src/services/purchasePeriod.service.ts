@@ -1,6 +1,7 @@
 import {
   Injectable,
   NotFoundException,
+  UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { StandardResopnse } from 'src/common';
@@ -19,7 +20,7 @@ import { PurchasePeriodItemFilterDto } from 'src/dtos/purchasePeriodItem.dto';
 import { PurchasePeriodItem } from 'src/entities/purchasePeriodItem.entity';
 import { PurchasePeriodItemRepository } from 'src/repositories/purchasePeriodItems.repository';
 import { PurchasePeriodStatus } from 'src/common/index.enum';
-import { StringDecoder } from 'string_decoder';
+import { RequestContext } from 'src/common/context/requestContext';
 
 @Injectable()
 export class PurchasePeriodService {
@@ -32,8 +33,15 @@ export class PurchasePeriodService {
     purchasePeriodDto: PurchasePeriodDto,
     publish: boolean = false,
   ): Promise<StandardResopnse<PurchasePeriodDto>> {
+    const groupId = RequestContext.get('groupId');
+
+    if (!groupId) {
+      throw new UnauthorizedException('Invalid Request Context');
+    }
+
     const existingPurchasePeriod = await this.purchasePeriodRepository.findOne({
       name: purchasePeriodDto.name,
+      groupId,
     });
 
     if (existingPurchasePeriod) {
@@ -53,10 +61,12 @@ export class PurchasePeriodService {
         const purchasePeriodData = publish
           ? {
               ...rest,
+              groupId,
               status: PurchasePeriodStatus.PUBLISHED,
             }
           : {
               ...rest,
+              groupId,
               status: PurchasePeriodStatus.SAVED,
               requestStartDate: new Date(),
             };
@@ -75,6 +85,7 @@ export class PurchasePeriodService {
           const commodities = marketRunCommodities.map((item) =>
             marketRunCommodityTxRepo.create({
               ...item,
+              groupId,
               purchasePeriodId: purchasePeriodCreated.id,
             }),
           );
