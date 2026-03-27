@@ -11,6 +11,9 @@ import {
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { RoleEnum, SwaggerApiEnumTags } from '../common/index.enum';
 import {
+  AdminUniqueCheckResponseDto,
+  CheckAdminEmailUniqueDto,
+  CheckAdminPhoneUniqueDto,
   CreateAdminUser,
   CreateUser,
   LoginUserDto,
@@ -48,6 +51,22 @@ export class UserController {
     @Body() createAdminUser: CreateAdminUser,
   ): Promise<StandardResopnse<CreateAdminUser>> {
     return this.userService.createAdminUser(createAdminUser);
+  }
+
+  @Get('/admin/check-email')
+  @Public()
+  checkAdminEmailUnique(
+    @Query() query: CheckAdminEmailUniqueDto,
+  ): Promise<StandardResopnse<AdminUniqueCheckResponseDto>> {
+    return this.userService.checkAdminEmailUnique(query.email);
+  }
+
+  @Get('/admin/check-phone')
+  @Public()
+  checkAdminPhoneUnique(
+    @Query() query: CheckAdminPhoneUniqueDto,
+  ): Promise<StandardResopnse<AdminUniqueCheckResponseDto>> {
+    return this.userService.checkAdminPhoneUnique(query.phone);
   }
 
   // @Post('login')

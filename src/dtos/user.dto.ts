@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 import { BaseFilterDto } from './baseFilter.dto';
 import { Match } from 'src/decorators/match.decorator';
 
@@ -136,3 +142,23 @@ export class TokenDto {
 }
 
 export class UserFilterDto extends BaseFilterDto {}
+
+export class CheckAdminEmailUniqueDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @IsEmail()
+  email: string;
+}
+
+export class CheckAdminPhoneUniqueDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  phone: string;
+}
+
+export class AdminUniqueCheckResponseDto {
+  @ApiProperty()
+  isUnique: boolean;
+}

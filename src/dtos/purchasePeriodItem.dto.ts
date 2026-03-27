@@ -5,7 +5,6 @@ import {
   IsOptional,
   IsString,
   Min,
-  ValidateIf,
 } from 'class-validator';
 import { Trim } from 'src/decorators/trim.decorator';
 import { BaseFilterDto } from './baseFilter.dto';
@@ -23,13 +22,13 @@ export class PurchasePeriodItemDto {
   @Min(1)
   minQty: number;
 
-  @ApiProperty()
-  @IsNotEmpty()
+  @ApiProperty({ required: false, nullable: true })
+  @IsOptional()
   @IsNumber()
   @MaxGreaterThanMin('minQty', {
     message: 'maxQty must be greater than or equal to minQty',
   })
-  maxQty: number;
+  maxQty?: number | null;
 
   @ApiProperty()
   @IsNotEmpty()

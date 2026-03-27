@@ -8,6 +8,7 @@ import { plainToInstance } from 'class-transformer';
 import { StandardResopnse } from 'src/common';
 import { PaginatedRecordsDto, PaginationDto } from 'src/dtos/pagination.dto';
 import {
+  AdminUniqueCheckResponseDto,
   CreateAdminUser,
   CreateUser,
   LoginUserDto,
@@ -106,6 +107,30 @@ export class UserService {
 
     return {
       data: createUser,
+      code: 200,
+      message: 'Success',
+    };
+  }
+
+  async checkAdminEmailUnique(
+    email: string,
+  ): Promise<StandardResopnse<AdminUniqueCheckResponseDto>> {
+    const existingUser = await this.userRepository.findUserByEmail(email);
+
+    return {
+      data: { isUnique: !existingUser },
+      code: 200,
+      message: 'Success',
+    };
+  }
+
+  async checkAdminPhoneUnique(
+    phone: string,
+  ): Promise<StandardResopnse<AdminUniqueCheckResponseDto>> {
+    const existingUser = await this.userRepository.findOne({ phone });
+
+    return {
+      data: { isUnique: !existingUser },
       code: 200,
       message: 'Success',
     };
